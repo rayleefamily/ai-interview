@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { getApiKey } from "@/lib/apiKey";
 
 type Feedback = { score: number; comment: string; suggestions: string[] };
 type Turn = {
@@ -28,7 +30,10 @@ export default function Home() {
       ]);
       const res = await fetch("/api/interview", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-openai-api-key": getApiKey(),
+        },
         body: JSON.stringify({ jobDescription, messages }),
       });
       const data = await res.json();
@@ -155,7 +160,14 @@ export default function Home() {
         </section>
       )}
 
-      {error && <p className="text-red-600">{error}</p>}
+      {error && (
+        <p className="text-red-600">
+          {error}{" "}
+          <Link href="/settings" className="underline">
+            前往設定
+          </Link>
+        </p>
+      )}
     </main>
   );
 }

@@ -14,8 +14,12 @@ const SYSTEM_PROMPT = `你是一位專業、友善但嚴謹的面試官。使用
 {"feedback": {"score": number, "comment": string, "suggestions": string[]} | null, "question": string}`;
 
 export async function POST(request: Request) {
-  if (!process.env.OPENAI_API_KEY) {
-    return Response.json({ error: "伺服器未設定 OPENAI_API_KEY" }, { status: 500 });
+  const apiKey = request.headers.get("x-openai-api-key")?.trim();
+  if (!apiKey) {
+    return Response.json(
+      { error: "尚未設定 OpenAI API Key,請先到「設定」頁面輸入" },
+      { status: 401 },
+    );
   }
 
   let body: { jobDescription?: unknown; messages?: unknown };
@@ -43,7 +47,7 @@ export async function POST(request: Request) {
       )
     : [];
 
-  const client = new OpenAI();
+  const client = new OpenAI({ apiKey });
   try {
     const completion = await client.chat.completions.create({
       model: MODEL,
@@ -61,7 +65,10 @@ export async function POST(request: Request) {
       question: String(parsed.question ?? ""),
     });
   } catch (err) {
-    console.error("[/api/interview]", err);
+    if (err instanceof OpenAI.AuthenticationError) {
+      return Response.json({ error: "API Key 無效,請到「設定」頁面檢查" }, { status: 401 });
+    }
+    console.error("[/api/interview]", err instanceof Error ? err.message : "unknown error");
     return Response.json({ error: "呼叫 OpenAI 失敗,請稍後再試" }, { status: 502 });
   }
 }

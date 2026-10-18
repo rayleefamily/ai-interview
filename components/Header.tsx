@@ -15,6 +15,9 @@ export default function Header() {
           <Link href="/#how" className="hidden text-muted hover:text-foreground sm:block">
             流程
           </Link>
+          <Link href="/settings" className="text-muted hover:text-foreground">
+            設定
+          </Link>
           <Link
             href="/interview"
             className="rounded-full bg-foreground px-4 py-2 font-medium text-background transition hover:bg-accent hover:text-accent-ink"
