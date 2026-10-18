@@ -1,6 +1,13 @@
 import Link from "next/link";
 
-export default function Footer() {
+async function getYear() {
+  "use cache";
+  return new Date().getFullYear();
+}
+
+export default async function Footer() {
+  const year = await getYear();
+
   return (
     <footer className="border-t border-line">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
@@ -13,7 +20,7 @@ export default function Footer() {
           <Link href="/#how" className="hover:text-foreground">流程</Link>
           <Link href="/interview" className="hover:text-foreground">開始練習</Link>
         </nav>
-        <p>© {new Date().getFullYear()} AI Interview</p>
+        <p>© {year} AI Interview</p>
       </div>
     </footer>
   );
